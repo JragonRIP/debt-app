@@ -1,7 +1,23 @@
 import type { Payment } from "./types";
+import { DEBT_SHARE } from "./revenue-slice";
+
+export function getEntryKind(payment: Payment) {
+  return payment.kind ?? "debt_payment";
+}
+
+/** Dollars that count toward Dad / debt pace (30% of income entries). */
+export function debtContributionAmount(payment: Payment): number {
+  const kind = getEntryKind(payment);
+  if (kind === "income") return payment.amount * DEBT_SHARE;
+  return payment.amount;
+}
 
 export function sumPayments(payments: Payment[]): number {
   return payments.reduce((sum, p) => sum + p.amount, 0);
+}
+
+export function sumDebtContributions(payments: Payment[]): number {
+  return payments.reduce((sum, p) => sum + debtContributionAmount(p), 0);
 }
 
 export function getNextMilestone(
@@ -26,21 +42,21 @@ export function getNextMilestone(
 
 export function estimatePayoffDate(
   remainingBalance: number,
-  payments: Payment[]
+  pacePayments: Payment[]
 ): Date | null {
   if (remainingBalance <= 0) return new Date();
-  if (payments.length === 0) return null;
+  if (pacePayments.length === 0) return null;
 
-  const sorted = [...payments].sort(
+  const sorted = [...pacePayments].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
-  const totalPaid = sumPayments(sorted);
+  const paceTotal = sumDebtContributions(sorted);
   const first = new Date(sorted[0].date);
   const last = new Date(sorted[sorted.length - 1].date);
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysElapsed = Math.max(1, (last.getTime() - first.getTime()) / msPerDay);
 
-  const dailyRate = totalPaid / daysElapsed;
+  const dailyRate = paceTotal / daysElapsed;
   if (dailyRate <= 0) return null;
 
   const daysRemaining = remainingBalance / dailyRate;

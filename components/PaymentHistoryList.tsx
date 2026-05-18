@@ -3,11 +3,18 @@
 import { ChevronDown, History } from "lucide-react";
 import { useState } from "react";
 import type { Payment } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/projections";
+import {
+  debtContributionAmount,
+  formatCurrency,
+  formatDate,
+  getEntryKind,
+} from "@/lib/projections";
+import { DEBT_SHARE } from "@/lib/revenue-slice";
 import { Card } from "./ui/Card";
 
 interface PaymentHistoryListProps {
   payments: Payment[];
+  repaymentActive: boolean;
 }
 
 function StatusBadge({ status }: { status: Payment["status"] }) {
@@ -25,7 +32,25 @@ function StatusBadge({ status }: { status: Payment["status"] }) {
   );
 }
 
-export function PaymentHistoryList({ payments }: PaymentHistoryListProps) {
+function KindBadge({ kind }: { kind: ReturnType<typeof getEntryKind> }) {
+  const income = kind === "income";
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+        income
+          ? "border-sky-400/35 bg-sky-950/40 text-sky-200"
+          : "border-chrome/35 bg-chrome/10 text-chrome-bright"
+      }`}
+    >
+      {income ? "Income" : "Payment to Dad"}
+    </span>
+  );
+}
+
+export function PaymentHistoryList({
+  payments,
+  repaymentActive,
+}: PaymentHistoryListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const sorted = [...payments].sort(
@@ -33,15 +58,20 @@ export function PaymentHistoryList({ payments }: PaymentHistoryListProps) {
   );
 
   return (
-    <Card title="Payments" icon={<History className="h-4 w-4" />}>
+    <Card title="History" icon={<History className="h-4 w-4" />}>
       {sorted.length === 0 ? (
         <p className="py-10 text-center text-sm text-white/50">
-          No payments yet. Log one from the Pay tab.
+          Nothing logged yet. Use the Pay tab to add{" "}
+          {repaymentActive ? "a payment" : "income"}.
         </p>
       ) : (
         <ul className="divide-y divide-chrome/15">
           {sorted.map((payment) => {
             const open = expandedId === payment.id;
+            const kind = getEntryKind(payment);
+            const slice =
+              kind === "income" ? debtContributionAmount(payment) : null;
+
             return (
               <li key={payment.id}>
                 <button
@@ -75,11 +105,29 @@ export function PaymentHistoryList({ payments }: PaymentHistoryListProps) {
                       {payment.description}
                     </p>
                     <p className="mt-3 text-xs font-medium uppercase tracking-wider text-chrome/55">
-                      Status
+                      Type
                     </p>
                     <div className="mt-1.5">
-                      <StatusBadge status={payment.status} />
+                      <KindBadge kind={kind} />
                     </div>
+                    {slice != null && (
+                      <p className="mt-2 text-xs text-white/45">
+                        {Math.round(DEBT_SHARE * 100)}% toward payoff pace:{" "}
+                        <span className="text-chrome-bright">
+                          {formatCurrency(slice)}
+                        </span>
+                      </p>
+                    )}
+                    {kind === "debt_payment" && (
+                      <>
+                        <p className="mt-3 text-xs font-medium uppercase tracking-wider text-chrome/55">
+                          Status
+                        </p>
+                        <div className="mt-1.5">
+                          <StatusBadge status={payment.status} />
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </li>

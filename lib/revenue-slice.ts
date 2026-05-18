@@ -1,5 +1,8 @@
 export const FRIEND_LABOR_RATE = 15;
 
+/** Share of net job earnings earmarked for Dad / buy-back debt */
+export const DEBT_SHARE = 0.3;
+
 export interface RevenueSliceResult {
   gross: number;
   hours: number;
@@ -22,7 +25,7 @@ export function calculateRevenueSlice(
     friendLaborCut,
     netAfterLabor,
     savings: netAfterLabor * 0.5,
-    debtPayment: netAfterLabor * 0.3,
+    debtPayment: netAfterLabor * DEBT_SHARE,
     takeHome: netAfterLabor * 0.2,
   };
 }

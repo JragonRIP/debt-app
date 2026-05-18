@@ -39,12 +39,16 @@ export function SettingsPanel({
   const [milestoneStep, setMilestoneStep] = useState(
     String(settings.milestoneStep)
   );
+  const [repaymentActive, setRepaymentActive] = useState(
+    settings.repaymentActive
+  );
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     if (open) {
       setTotalDebt(String(settings.totalDebt));
       setMilestoneStep(String(settings.milestoneStep));
+      setRepaymentActive(settings.repaymentActive);
       setConfirmClear(false);
     }
   }, [open, settings]);
@@ -56,6 +60,7 @@ export function SettingsPanel({
     onSave({
       totalDebt: Math.max(0, parseFloat(totalDebt) || 0),
       milestoneStep: Math.max(100, parseFloat(milestoneStep) || 500),
+      repaymentActive,
     });
     onClose();
   }
@@ -117,6 +122,35 @@ export function SettingsPanel({
             />
           </label>
 
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-white">
+                Paying Dad back
+              </p>
+              <p className="mt-0.5 text-xs text-white/45">
+                Off: log income only (30% used for projections). On: payments
+                reduce your balance.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={repaymentActive}
+              onClick={() => setRepaymentActive((v) => !v)}
+              className={`relative h-7 w-12 shrink-0 rounded-full border transition ${
+                repaymentActive
+                  ? "border-chrome/50 bg-chrome/25"
+                  : "border-chrome/25 bg-forest-950"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 block h-5 w-5 rounded-full bg-chrome-bright shadow transition ${
+                  repaymentActive ? "left-[1.35rem]" : "left-0.5"
+                }`}
+              />
+            </button>
+          </div>
+
           <button type="submit" className="chrome-button w-full">
             Save Settings
           </button>
@@ -127,8 +161,9 @@ export function SettingsPanel({
             Danger zone
           </p>
           <p className="mb-4 text-xs text-white/45">
-            Removes every logged payment and clears any pre-filled amounts from
-            the calculator. Your debt total and milestone settings stay the same.
+            Removes all income and payment history and clears calculator
+            pre-fills. Debt total, milestone, and the paying-Dad toggle stay
+            the same.
           </p>
           {!confirmClear ? (
             <button

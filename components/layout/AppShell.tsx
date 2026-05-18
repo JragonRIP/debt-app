@@ -15,10 +15,21 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { settings, updateSettings, clearAllPayments } = useLedger();
+  const { settings, updateSettings, clearAllPayments, repaymentActive } =
+    useLedger();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const meta = pageTitles[pathname] ?? pageTitles["/"];
+  const baseMeta = pageTitles[pathname] ?? pageTitles["/"];
+  const meta =
+    pathname === "/pay"
+      ? {
+          ...baseMeta,
+          title: repaymentActive ? "Log Payment" : "Log Income",
+          subtitle: repaymentActive
+            ? "Record a payment to Dad"
+            : "Track job earnings (30% used in projections)",
+        }
+      : baseMeta;
 
   return (
     <>

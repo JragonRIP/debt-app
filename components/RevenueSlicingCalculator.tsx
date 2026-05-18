@@ -3,7 +3,11 @@
 import { Calculator, Clock, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { calculateRevenueSlice, FRIEND_LABOR_RATE } from "@/lib/revenue-slice";
+import {
+  calculateRevenueSlice,
+  DEBT_SHARE,
+  FRIEND_LABOR_RATE,
+} from "@/lib/revenue-slice";
 import { formatCurrency } from "@/lib/projections";
 import { useLedger } from "@/context/LedgerContext";
 import { Card } from "./ui/Card";
@@ -13,7 +17,7 @@ const inputClass =
 
 export function RevenueSlicingCalculator() {
   const router = useRouter();
-  const { setPaymentDraft } = useLedger();
+  const { setPaymentDraft, repaymentActive } = useLedger();
   const [earnings, setEarnings] = useState("");
   const [hours, setHours] = useState("");
 
@@ -25,11 +29,18 @@ export function RevenueSlicingCalculator() {
   }, [earnings, hours]);
 
   function handleApply() {
-    if (!slice || slice.debtPayment <= 0) return;
-    setPaymentDraft({
-      amount: Math.round(slice.debtPayment * 100) / 100,
-      description: `Detailing job — ${hours || 0}h (${formatCurrency(slice.gross)} gross)`,
-    });
+    if (!slice || slice.gross <= 0) return;
+    if (repaymentActive) {
+      setPaymentDraft({
+        amount: Math.round(slice.debtPayment * 100) / 100,
+        description: `Payment to Dad — ${hours || 0}h job (${formatCurrency(slice.gross)} gross)`,
+      });
+    } else {
+      setPaymentDraft({
+        amount: Math.round(slice.gross * 100) / 100,
+        description: `Detailing job — ${hours || 0}h (${formatCurrency(slice.gross)} gross)`,
+      });
+    }
     router.push("/pay");
   }
 
@@ -44,7 +55,9 @@ export function RevenueSlicingCalculator() {
         { label: "Savings", sub: "50%", value: slice.savings, accent: false },
         {
           label: "Suggested Debt Payment",
-          sub: "30% — sent to Pay tab",
+          sub: repaymentActive
+            ? `${Math.round(DEBT_SHARE * 100)}% — sent to Pay tab`
+            : `${Math.round(DEBT_SHARE * 100)}% — used in payoff projection`,
           value: slice.debtPayment,
           accent: true,
         },
@@ -60,8 +73,10 @@ export function RevenueSlicingCalculator() {
   return (
     <Card title="Revenue Slicing" icon={<Calculator className="h-4 w-4" />}>
       <p className="-mt-2 mb-5 text-sm text-white/55">
-        Split detailing job earnings after labor. Debt share opens on the Pay
-        page.
+        Split detailing job earnings after labor.{" "}
+        {repaymentActive
+          ? "Debt share opens on the Pay tab."
+          : "Log gross income on Pay; projections count the 30% slice."}
       </p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -128,10 +143,12 @@ export function RevenueSlicingCalculator() {
           <button
             type="button"
             onClick={handleApply}
-            disabled={slice.debtPayment <= 0}
+            disabled={slice.gross <= 0}
             className="chrome-button mt-2 w-full disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Apply Debt Payment — Go to Pay
+            {repaymentActive
+              ? "Apply Debt Payment — Go to Pay"
+              : "Log Job Income — Go to Pay"}
           </button>
         </div>
       )}

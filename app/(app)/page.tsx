@@ -5,7 +5,11 @@ import { useLedger } from "@/context/LedgerContext";
 
 export default function DashboardPage() {
   const {
+    repaymentActive,
     totalRemaining,
+    settings,
+    totalIncomeLogged,
+    effectiveTowardGoal,
     percentPaid,
     milestone,
     targetDate,
@@ -13,7 +17,11 @@ export default function DashboardPage() {
 
   return (
     <HeroSummaryCard
+      repaymentActive={repaymentActive}
       totalRemaining={totalRemaining}
+      totalDebt={settings.totalDebt}
+      totalIncomeLogged={totalIncomeLogged}
+      effectiveTowardGoal={effectiveTowardGoal}
       percentPaid={percentPaid}
       nextMilestoneLabel={milestone.label}
       nextMilestoneAmount={milestone.amount}

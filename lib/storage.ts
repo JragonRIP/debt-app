@@ -3,12 +3,19 @@ import { DEFAULT_SETTINGS, type LedgerSettings, type Payment } from "./types";
 const PAYMENTS_KEY = "impala-ledger-payments-v2";
 const SETTINGS_KEY = "impala-ledger-settings";
 
+function normalizePayment(p: Payment): Payment {
+  return {
+    ...p,
+    kind: p.kind ?? "debt_payment",
+  };
+}
+
 export function loadPayments(): Payment[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(PAYMENTS_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as Payment[];
+    return (JSON.parse(raw) as Payment[]).map(normalizePayment);
   } catch {
     return [];
   }

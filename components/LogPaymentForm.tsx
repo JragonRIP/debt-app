@@ -14,6 +14,7 @@ interface LogPaymentFormProps {
   suggestedAmount?: number | null;
   suggestedDescription?: string | null;
   onClearSuggestion?: () => void;
+  repaymentActive?: boolean;
 }
 
 const inputClass =
@@ -24,6 +25,7 @@ export function LogPaymentForm({
   suggestedAmount,
   suggestedDescription,
   onClearSuggestion,
+  repaymentActive = true,
 }: LogPaymentFormProps) {
   const today = new Date().toISOString().slice(0, 10);
   const [amount, setAmount] = useState("");
@@ -57,7 +59,7 @@ export function LogPaymentForm({
       <label className="block">
         <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-chrome/70">
           <DollarSign className="h-3.5 w-3.5" />
-          Amount
+          {repaymentActive ? "Payment amount" : "Job earnings (gross)"}
         </span>
         <input
           type="number"
@@ -66,7 +68,7 @@ export function LogPaymentForm({
           required
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="0.00"
+          placeholder={repaymentActive ? "0.00" : "250.00"}
           className={inputClass}
         />
       </label>
@@ -100,7 +102,7 @@ export function LogPaymentForm({
       </label>
 
       <button type="submit" className="chrome-button w-full">
-        Submit Payment
+        {repaymentActive ? "Submit Payment" : "Log Income"}
       </button>
     </form>
   );
