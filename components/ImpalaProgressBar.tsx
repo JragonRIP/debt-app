@@ -6,7 +6,7 @@ interface ImpalaProgressBarProps {
   percent: number;
 }
 
-const CAR_WIDTH = 88;
+const CAR_WIDTH = 96;
 
 export function ImpalaProgressBar({ percent }: ImpalaProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, percent));
@@ -19,7 +19,7 @@ export function ImpalaProgressBar({ percent }: ImpalaProgressBarProps) {
         <span className="text-chrome-bright">{clamped.toFixed(1)}%</span>
       </div>
 
-      <div className="relative pt-9 pb-1">
+      <div className="relative pt-11 pb-1">
         <div
           className="pointer-events-none absolute top-0 z-10 transition-all duration-700 ease-out"
           style={{ left: carLeft, width: CAR_WIDTH }}
@@ -28,14 +28,14 @@ export function ImpalaProgressBar({ percent }: ImpalaProgressBarProps) {
           <Image
             src="/impala-side.png"
             alt=""
-            width={176}
-            height={64}
-            className="h-10 w-[88px] object-contain object-left mix-blend-multiply drop-shadow-[0_4px_12px_rgba(0,0,0,0.55)]"
+            width={320}
+            height={120}
+            className="h-11 w-24 object-contain object-center drop-shadow-[0_4px_14px_rgba(0,0,0,0.5)]"
             priority
           />
         </div>
 
-        <div className="relative h-3 overflow-hidden rounded-full border border-chrome/35 bg-forest-950 shadow-inner">
+        <div className="relative h-3 overflow-visible rounded-full border border-chrome/35 bg-forest-950 shadow-inner">
           <div
             className="chrome-bar absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
             style={{ width: `${clamped}%` }}
