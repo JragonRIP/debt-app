@@ -1,14 +1,16 @@
 "use client";
 
-import { MuscleCarIcon } from "./icons/MuscleCarIcon";
+import Image from "next/image";
 
 interface ImpalaProgressBarProps {
   percent: number;
 }
 
+const CAR_WIDTH = 88;
+
 export function ImpalaProgressBar({ percent }: ImpalaProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, percent));
-  const carLeft = `calc(${clamped}% - 18px)`;
+  const carLeft = `calc(${clamped}% - ${CAR_WIDTH / 2}px)`;
 
   return (
     <div className="relative mt-6">
@@ -16,19 +18,28 @@ export function ImpalaProgressBar({ percent }: ImpalaProgressBarProps) {
         <span>Paid off</span>
         <span className="text-chrome-bright">{clamped.toFixed(1)}%</span>
       </div>
-      <div className="relative h-3 overflow-hidden rounded-full border border-chrome/35 bg-forest-950 shadow-inner">
+
+      <div className="relative pt-9 pb-1">
         <div
-          className="chrome-bar absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${clamped}%` }}
-        />
-        <div
-          className="absolute top-1/2 z-10 -translate-y-1/2 transition-all duration-700 ease-out"
-          style={{ left: carLeft }}
+          className="pointer-events-none absolute top-0 z-10 transition-all duration-700 ease-out"
+          style={{ left: carLeft, width: CAR_WIDTH }}
           aria-hidden
         >
-          <span className="flex h-8 w-9 items-center justify-center rounded-full border border-chrome/50 bg-gradient-to-b from-zinc-200 to-zinc-400 px-0.5 text-forest-950 shadow-[0_2px_8px_rgba(0,0,0,0.4)]">
-            <MuscleCarIcon className="h-3 w-6" />
-          </span>
+          <Image
+            src="/impala-side.png"
+            alt=""
+            width={176}
+            height={64}
+            className="h-10 w-[88px] object-contain object-left mix-blend-multiply drop-shadow-[0_4px_12px_rgba(0,0,0,0.55)]"
+            priority
+          />
+        </div>
+
+        <div className="relative h-3 overflow-hidden rounded-full border border-chrome/35 bg-forest-950 shadow-inner">
+          <div
+            className="chrome-bar absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
+            style={{ width: `${clamped}%` }}
+          />
         </div>
       </div>
     </div>

@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: "/icon.png",
   },
 };
 

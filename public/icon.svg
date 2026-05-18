@@ -1,11 +1,96 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" rx="96" fill="#0a1f15"/>
-  <rect x="32" y="32" width="448" height="448" rx="80" stroke="#c0c8d0" stroke-width="8" fill="none" opacity="0.6"/>
-  <path d="M96 320h320l-40-80H136l-40 80z" fill="#1a4d32"/>
-  <path d="M120 240h272l-24-48H144l-24 48z" fill="#2d6b47"/>
-  <circle cx="160" cy="328" r="36" fill="#d1d5db" stroke="#94a3b8" stroke-width="6"/>
-  <circle cx="352" cy="328" r="36" fill="#d1d5db" stroke="#94a3b8" stroke-width="6"/>
-  <circle cx="160" cy="328" r="14" fill="#64748b"/>
-  <circle cx="352" cy="328" r="14" fill="#64748b"/>
-  <path d="M200 200h112l16-32H184l16 32z" fill="#e2e8f0" opacity="0.9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="1968 Impala">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d2419"/>
+      <stop offset="100%" stop-color="#061410"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#3d9a6e"/>
+      <stop offset="35%" stop-color="#2a7d58"/>
+      <stop offset="100%" stop-color="#1a5c42"/>
+    </linearGradient>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="0.3" y1="0.2" x2="0.8" y2="0.9">
+      <stop offset="0%" stop-color="#fafafa"/>
+      <stop offset="100%" stop-color="#d4d4d8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App background -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Front clip / fenders (wide muscle stance) -->
+  <path
+    fill="url(#body)"
+    d="M72 168c48-52 136-76 256-76s208 24 256 76l12 108c-6 28-40 48-88 56H148c-48-8-82-28-88-56L72 168z"
+  />
+  <!-- Hood center ridge + pearl highlight -->
+  <path
+    fill="#4aad78"
+    opacity="0.35"
+    d="M228 142h56l8 98c-2 12-14 20-36 20s-34-8-36-20l8-98z"
+  />
+  <path
+    fill="#5ec492"
+    opacity="0.2"
+    d="M244 150h24v72c0 8-6 14-12 14s-12-6-12-14v-72z"
+  />
+
+  <!-- Chrome bumper -->
+  <rect x="56" y="358" width="400" height="36" rx="10" fill="url(#chrome)"/>
+  <rect x="64" y="366" width="384" height="8" rx="4" fill="#e2e8f0" opacity="0.55"/>
+
+  <!-- Grille surround -->
+  <rect x="168" y="268" width="176" height="88" rx="6" fill="url(#chrome)"/>
+  <!-- Grille mesh (horizontal bars) -->
+  <g stroke="#64748b" stroke-width="3" stroke-linecap="round">
+    <line x1="180" y1="284" x2="332" y2="284"/>
+    <line x1="180" y1="298" x2="332" y2="298"/>
+    <line x1="180" y1="312" x2="332" y2="312"/>
+    <line x1="180" y1="326" x2="332" y2="326"/>
+    <line x1="180" y1="340" x2="332" y2="340"/>
+  </g>
+  <!-- Bowtie emblem -->
+  <path fill="#d4a017" d="M248 314h6v12h-6zM258 314h6v12h-6zM244 318h24v6h-24z"/>
+  <path fill="#2563eb" d="M250 316h12v10h-12z" opacity="0.85"/>
+
+  <!-- Quad headlights: 2 per side, stacked -->
+  <g fill="url(#lens)" stroke="#94a3b8" stroke-width="5">
+    <circle cx="118" cy="286" r="30"/>
+    <circle cx="118" cy="338" r="30"/>
+    <circle cx="394" cy="286" r="30"/>
+    <circle cx="394" cy="338" r="30"/>
+  </g>
+  <!-- Lens glint -->
+  <g fill="#ffffff" opacity="0.7">
+    <circle cx="108" cy="276" r="8"/>
+    <circle cx="108" cy="328" r="8"/>
+    <circle cx="384" cy="276" r="8"/>
+    <circle cx="384" cy="328" r="8"/>
+  </g>
+
+  <!-- Headlight chrome bezels -->
+  <g fill="none" stroke="url(#chrome)" stroke-width="4">
+    <circle cx="118" cy="286" r="34"/>
+    <circle cx="118" cy="338" r="34"/>
+    <circle cx="394" cy="286" r="34"/>
+    <circle cx="394" cy="338" r="34"/>
+  </g>
+
+  <!-- Subtle chrome frame ring (app polish) -->
+  <rect
+    x="24"
+    y="24"
+    width="464"
+    height="464"
+    rx="92"
+    stroke="#94a3b8"
+    stroke-width="3"
+    fill="none"
+    opacity="0.22"
+  />
 </svg>
