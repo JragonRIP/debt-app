@@ -8,8 +8,6 @@ export default function DashboardPage() {
     repaymentActive,
     totalRemaining,
     settings,
-    totalIncomeLogged,
-    effectiveTowardGoal,
     percentPaid,
     milestone,
     targetDate,
@@ -20,8 +18,6 @@ export default function DashboardPage() {
       repaymentActive={repaymentActive}
       totalRemaining={totalRemaining}
       totalDebt={settings.totalDebt}
-      totalIncomeLogged={totalIncomeLogged}
-      effectiveTowardGoal={effectiveTowardGoal}
       percentPaid={percentPaid}
       nextMilestoneLabel={milestone.label}
       nextMilestoneAmount={milestone.amount}

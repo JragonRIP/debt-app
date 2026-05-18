@@ -9,8 +9,6 @@ interface HeroSummaryCardProps {
   repaymentActive: boolean;
   totalRemaining: number;
   totalDebt: number;
-  totalIncomeLogged: number;
-  effectiveTowardGoal: number;
   percentPaid: number;
   nextMilestoneLabel: string;
   nextMilestoneAmount: number;
@@ -21,18 +19,12 @@ export function HeroSummaryCard({
   repaymentActive,
   totalRemaining,
   totalDebt,
-  totalIncomeLogged,
-  effectiveTowardGoal,
   percentPaid,
   nextMilestoneLabel,
   nextMilestoneAmount,
   targetCompletionDate,
 }: HeroSummaryCardProps) {
-  const progressPercent = repaymentActive
-    ? percentPaid
-    : totalDebt > 0
-      ? (effectiveTowardGoal / totalDebt) * 100
-      : 0;
+  const progressPercent = repaymentActive ? percentPaid : 0;
 
   return (
     <section className="impala-hero relative overflow-hidden rounded-3xl border border-chrome/30 p-6 sm:p-8">
@@ -43,29 +35,12 @@ export function HeroSummaryCard({
         1968 Impala · Buy-Back Ledger
       </p>
 
-      {!repaymentActive && (
-        <p className="mb-3 rounded-lg border border-chrome/20 bg-forest-950/50 px-3 py-2 text-xs text-chrome/80">
-          Income tracking — not paying Dad back yet. Projections use{" "}
-          {Math.round(DEBT_SHARE * 100)}% of logged job income.
-        </p>
-      )}
-
       <p className="text-sm text-white/60">
         {repaymentActive ? "Total Remaining Balance" : "Buy-back goal"}
       </p>
       <p className="font-display mt-1 text-4xl font-bold tracking-tight text-white sm:text-5xl">
         {formatCurrency(repaymentActive ? totalRemaining : totalDebt)}
       </p>
-      {!repaymentActive && totalIncomeLogged > 0 && (
-        <p className="mt-1 text-sm text-chrome-bright">
-          {formatCurrency(effectiveTowardGoal)} toward goal at{" "}
-          {Math.round(DEBT_SHARE * 100)}% slice
-          <span className="text-white/45">
-            {" "}
-            ({formatCurrency(totalIncomeLogged)} logged)
-          </span>
-        </p>
-      )}
 
       <ImpalaProgressBar percent={progressPercent} />
 
@@ -77,11 +52,17 @@ export function HeroSummaryCard({
               Next Milestone
             </span>
           </div>
-          <p className="font-medium text-white">{nextMilestoneLabel}</p>
-          {nextMilestoneAmount > 0 && (
-            <p className="mt-0.5 text-sm text-chrome-bright">
-              {formatCurrency(nextMilestoneAmount)} to go
-            </p>
+          {repaymentActive ? (
+            <>
+              <p className="font-medium text-white">{nextMilestoneLabel}</p>
+              {nextMilestoneAmount > 0 && (
+                <p className="mt-0.5 text-sm text-chrome-bright">
+                  {formatCurrency(nextMilestoneAmount)} to go
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="font-medium text-white/50">—</p>
           )}
         </div>
         <div className="rounded-xl border border-chrome/20 bg-forest-950/60 px-4 py-3">

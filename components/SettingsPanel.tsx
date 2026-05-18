@@ -123,15 +123,7 @@ export function SettingsPanel({
           </label>
 
           <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
-            <div>
-              <p className="text-sm font-medium text-white">
-                Paying Dad back
-              </p>
-              <p className="mt-0.5 text-xs text-white/45">
-                Off: log income only (30% used for projections). On: payments
-                reduce your balance.
-              </p>
-            </div>
+            <p className="text-sm font-medium text-white">Paying Dad back</p>
             <button
               type="button"
               role="switch"

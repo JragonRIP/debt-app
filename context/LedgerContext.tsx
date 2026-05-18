@@ -110,15 +110,16 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     return sumDebtContributions(incomeEntries);
   }, [repaymentActive, totalPaidTowardDebt, incomeEntries]);
 
-  const milestone = useMemo(
-    () =>
-      getNextMilestone(
-        effectiveTowardGoal,
-        totalDebt,
-        settings?.milestoneStep ?? 500
-      ),
-    [effectiveTowardGoal, totalDebt, settings?.milestoneStep]
-  );
+  const milestone = useMemo(() => {
+    if (!repaymentActive) {
+      return { label: "—", amount: 0, progress: 0 };
+    }
+    return getNextMilestone(
+      totalPaidTowardDebt,
+      totalDebt,
+      settings?.milestoneStep ?? 500
+    );
+  }, [repaymentActive, totalPaidTowardDebt, totalDebt, settings?.milestoneStep]);
 
   const targetDate = useMemo(() => {
     if (repaymentActive) {

@@ -72,13 +72,6 @@ export function RevenueSlicingCalculator() {
 
   return (
     <Card title="Revenue Slicing" icon={<Calculator className="h-4 w-4" />}>
-      <p className="-mt-2 mb-5 text-sm text-white/55">
-        Split detailing job earnings after labor.{" "}
-        {repaymentActive
-          ? "Debt share opens on the Pay tab."
-          : "Log gross income on Pay; projections count the 30% slice."}
-      </p>
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-chrome/70">

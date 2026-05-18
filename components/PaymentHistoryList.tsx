@@ -8,6 +8,7 @@ import {
   formatCurrency,
   formatDate,
   getEntryKind,
+  parseLocalDate,
 } from "@/lib/projections";
 import { DEBT_SHARE } from "@/lib/revenue-slice";
 import { Card } from "./ui/Card";
@@ -54,7 +55,8 @@ export function PaymentHistoryList({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const sorted = [...payments].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) =>
+      parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime()
   );
 
   return (

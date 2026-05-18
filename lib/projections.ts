@@ -5,6 +5,12 @@ export function getEntryKind(payment: Payment) {
   return payment.kind ?? "debt_payment";
 }
 
+/** Parse YYYY-MM-DD as local calendar date (avoids UTC off-by-one). */
+export function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 /** Dollars that count toward Dad / debt pace (30% of income entries). */
 export function debtContributionAmount(payment: Payment): number {
   const kind = getEntryKind(payment);
@@ -48,11 +54,12 @@ export function estimatePayoffDate(
   if (pacePayments.length === 0) return null;
 
   const sorted = [...pacePayments].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) =>
+      parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
   );
   const paceTotal = sumDebtContributions(sorted);
-  const first = new Date(sorted[0].date);
-  const last = new Date(sorted[sorted.length - 1].date);
+  const first = parseLocalDate(sorted[0].date);
+  const last = parseLocalDate(sorted[sorted.length - 1].date);
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysElapsed = Math.max(1, (last.getTime() - first.getTime()) / msPerDay);
 
@@ -61,6 +68,7 @@ export function estimatePayoffDate(
 
   const daysRemaining = remainingBalance / dailyRate;
   const payoff = new Date();
+  payoff.setHours(0, 0, 0, 0);
   payoff.setDate(payoff.getDate() + Math.ceil(daysRemaining));
   return payoff;
 }
@@ -76,7 +84,12 @@ export function formatCurrency(amount: number): string {
 
 export function formatDate(date: Date | string | null): string {
   if (!date) return "—";
-  const d = typeof date === "string" ? new Date(date) : date;
+  const d =
+    typeof date === "string"
+      ? /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? parseLocalDate(date)
+        : new Date(date)
+      : date;
   if (Number.isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("en-US", {
     month: "short",
@@ -89,7 +102,12 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 /** Calendar days from today (midnight) until target (midnight). */
 export function daysUntilDate(target: Date | string): number {
-  const d = typeof target === "string" ? new Date(target) : new Date(target);
+  const d =
+    typeof target === "string"
+      ? /^\d{4}-\d{2}-\d{2}$/.test(target)
+        ? parseLocalDate(target)
+        : new Date(target)
+      : new Date(target);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   d.setHours(0, 0, 0, 0);
