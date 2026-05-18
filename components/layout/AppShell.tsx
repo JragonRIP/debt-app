@@ -15,7 +15,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { settings, updateSettings } = useLedger();
+  const { settings, updateSettings, clearAllPayments } = useLedger();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const meta = pageTitles[pathname] ?? pageTitles["/"];
@@ -42,6 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         settings={settings}
         onClose={() => setSettingsOpen(false)}
         onSave={updateSettings}
+        onClearAllPayments={clearAllPayments}
       />
     </>
   );

@@ -45,6 +45,7 @@ interface LedgerContextValue {
   updateSettings: (settings: LedgerSettings) => void;
   setPaymentDraft: (draft: PaymentDraftPrefill | null) => void;
   clearPaymentDraft: () => void;
+  clearAllPayments: () => void;
 }
 
 const LedgerContext = createContext<LedgerContextValue | null>(null);
@@ -117,6 +118,12 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     setPaymentDraft(null);
   }, []);
 
+  const clearAllPayments = useCallback(() => {
+    clearPaymentsStorage();
+    setPayments([]);
+    setPaymentDraft(null);
+  }, []);
+
   if (!hydrated || !settings) {
     return (
       <div className="flex min-h-dvh items-center justify-center text-chrome/60">
@@ -141,6 +148,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
         updateSettings,
         setPaymentDraft,
         clearPaymentDraft,
+        clearAllPayments,
       }}
     >
       {children}
