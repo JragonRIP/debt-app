@@ -68,3 +68,40 @@ export function formatDate(date: Date | string | null): string {
     year: "numeric",
   });
 }
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+/** Calendar days from today (midnight) until target (midnight). */
+export function daysUntilDate(target: Date | string): number {
+  const d = typeof target === "string" ? new Date(target) : new Date(target);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.ceil((d.getTime() - today.getTime()) / MS_PER_DAY));
+}
+
+/** e.g. "23 days", "4 months 7 days", "Paid off" */
+export function formatDaysUntil(target: Date | string | null): string {
+  if (!target) return "—";
+  const d = typeof target === "string" ? new Date(target) : target;
+  if (Number.isNaN(d.getTime())) return "—";
+
+  const days = daysUntilDate(d);
+  if (days === 0) return "Paid off";
+  if (days === 1) return "1 day";
+  if (days < 30) return `${days} days`;
+
+  const months = Math.floor(days / 30);
+  const remainder = days % 30;
+
+  if (remainder === 0) {
+    return months === 1 ? "1 month" : `${months} months`;
+  }
+  if (months === 0) {
+    return `${days} days`;
+  }
+
+  const monthLabel = months === 1 ? "1 month" : `${months} months`;
+  const dayLabel = remainder === 1 ? "1 day" : `${remainder} days`;
+  return `${monthLabel} ${dayLabel}`;
+}

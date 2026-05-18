@@ -2,7 +2,7 @@
 
 import { Calendar, Flag, TrendingUp } from "lucide-react";
 import { ImpalaProgressBar } from "./ImpalaProgressBar";
-import { formatCurrency, formatDate } from "@/lib/projections";
+import { formatCurrency, formatDate, formatDaysUntil } from "@/lib/projections";
 
 interface HeroSummaryCardProps {
   totalRemaining: number;
@@ -58,6 +58,10 @@ export function HeroSummaryCard({
           </div>
           <p className="font-medium text-white">
             {formatDate(targetCompletionDate)}
+          </p>
+          <p className="mt-1 text-sm text-chrome-bright">
+            <span className="text-chrome/60">Days until · </span>
+            {formatDaysUntil(targetCompletionDate)}
           </p>
           <p className="mt-0.5 flex items-center gap-1 text-sm text-white/50">
             <TrendingUp className="h-3 w-3 text-chrome/60" />
