@@ -1,4 +1,9 @@
-import { DEFAULT_SETTINGS, type LedgerSettings, type Payment } from "./types";
+import {
+  DEFAULT_SETTINGS,
+  normalizeDebtSharePercent,
+  type LedgerSettings,
+  type Payment,
+} from "./types";
 
 const PAYMENTS_KEY = "impala-ledger-payments-v2";
 const SETTINGS_KEY = "impala-ledger-settings";
@@ -7,6 +12,16 @@ function normalizePayment(p: Payment): Payment {
   return {
     ...p,
     kind: p.kind ?? "debt_payment",
+  };
+}
+
+function normalizeSettings(raw: Partial<LedgerSettings>): LedgerSettings {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...raw,
+    debtSharePercent: normalizeDebtSharePercent(
+      raw.debtSharePercent ?? DEFAULT_SETTINGS.debtSharePercent
+    ),
   };
 }
 
@@ -30,7 +45,7 @@ export function loadSettings(): LedgerSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    return normalizeSettings(JSON.parse(raw) as Partial<LedgerSettings>);
   } catch {
     return DEFAULT_SETTINGS;
   }

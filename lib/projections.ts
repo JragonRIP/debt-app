@@ -1,5 +1,8 @@
-import type { Payment } from "./types";
-import { DEBT_SHARE } from "./revenue-slice";
+import {
+  DEFAULT_SETTINGS,
+  normalizeDebtSharePercent,
+  type Payment,
+} from "./types";
 
 export function getEntryKind(payment: Payment) {
   return payment.kind ?? "debt_payment";
@@ -11,10 +14,15 @@ export function parseLocalDate(dateStr: string): Date {
   return new Date(y, m - 1, d);
 }
 
-/** Dollars that count toward Dad / debt pace (30% of income entries). */
-export function debtContributionAmount(payment: Payment): number {
+/** Dollars that count toward Dad / debt pace (share of income entries). */
+export function debtContributionAmount(
+  payment: Payment,
+  debtSharePercent: number = DEFAULT_SETTINGS.debtSharePercent
+): number {
   const kind = getEntryKind(payment);
-  if (kind === "income") return payment.amount * DEBT_SHARE;
+  if (kind === "income") {
+    return payment.amount * (normalizeDebtSharePercent(debtSharePercent) / 100);
+  }
   return payment.amount;
 }
 
@@ -22,8 +30,14 @@ export function sumPayments(payments: Payment[]): number {
   return payments.reduce((sum, p) => sum + p.amount, 0);
 }
 
-export function sumDebtContributions(payments: Payment[]): number {
-  return payments.reduce((sum, p) => sum + debtContributionAmount(p), 0);
+export function sumDebtContributions(
+  payments: Payment[],
+  debtSharePercent: number = DEFAULT_SETTINGS.debtSharePercent
+): number {
+  return payments.reduce(
+    (sum, p) => sum + debtContributionAmount(p, debtSharePercent),
+    0
+  );
 }
 
 export function getNextMilestone(
@@ -48,7 +62,8 @@ export function getNextMilestone(
 
 export function estimatePayoffDate(
   remainingBalance: number,
-  pacePayments: Payment[]
+  pacePayments: Payment[],
+  debtSharePercent: number = DEFAULT_SETTINGS.debtSharePercent
 ): Date | null {
   if (remainingBalance <= 0) return new Date();
   if (pacePayments.length === 0) return null;
@@ -57,7 +72,7 @@ export function estimatePayoffDate(
     (a, b) =>
       parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
   );
-  const paceTotal = sumDebtContributions(sorted);
+  const paceTotal = sumDebtContributions(sorted, debtSharePercent);
   const first = parseLocalDate(sorted[0].date);
   const last = parseLocalDate(sorted[sorted.length - 1].date);
   const msPerDay = 1000 * 60 * 60 * 24;

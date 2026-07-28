@@ -11,6 +11,7 @@ export default function DashboardPage() {
     percentPaid,
     milestone,
     targetDate,
+    debtSharePercent,
   } = useLedger();
 
   return (
@@ -22,6 +23,7 @@ export default function DashboardPage() {
       nextMilestoneLabel={milestone.label}
       nextMilestoneAmount={milestone.amount}
       targetCompletionDate={targetDate}
+      debtSharePercent={debtSharePercent}
     />
   );
 }

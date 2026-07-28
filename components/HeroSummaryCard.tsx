@@ -3,7 +3,6 @@
 import { Calendar, Flag, TrendingUp } from "lucide-react";
 import { ImpalaProgressBar } from "./ImpalaProgressBar";
 import { formatCurrency, formatDate, formatDaysUntil } from "@/lib/projections";
-import { DEBT_SHARE } from "@/lib/revenue-slice";
 
 interface HeroSummaryCardProps {
   repaymentActive: boolean;
@@ -13,6 +12,7 @@ interface HeroSummaryCardProps {
   nextMilestoneLabel: string;
   nextMilestoneAmount: number;
   targetCompletionDate: Date | null;
+  debtSharePercent: number;
 }
 
 export function HeroSummaryCard({
@@ -23,6 +23,7 @@ export function HeroSummaryCard({
   nextMilestoneLabel,
   nextMilestoneAmount,
   targetCompletionDate,
+  debtSharePercent,
 }: HeroSummaryCardProps) {
   const progressPercent = repaymentActive ? percentPaid : 0;
 
@@ -83,7 +84,7 @@ export function HeroSummaryCard({
             <TrendingUp className="h-3 w-3 text-chrome/60" />
             {repaymentActive
               ? "Based on payments to Dad"
-              : `Based on ${Math.round(DEBT_SHARE * 100)}% of your income pace`}
+              : `Based on ${debtSharePercent}% of your income pace`}
           </p>
         </div>
       </div>

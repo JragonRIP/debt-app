@@ -9,7 +9,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { LedgerSettings, Payment } from "@/lib/types";
+import {
+  normalizeDebtSharePercent,
+  type LedgerSettings,
+  type Payment,
+} from "@/lib/types";
 import {
   estimatePayoffDate,
   getNextMilestone,
@@ -38,6 +42,7 @@ interface LedgerContextValue {
   settings: LedgerSettings;
   paymentDraft: PaymentDraftPrefill | null;
   repaymentActive: boolean;
+  debtSharePercent: number;
   totalPaidTowardDebt: number;
   totalIncomeLogged: number;
   effectiveTowardGoal: number;
@@ -47,6 +52,7 @@ interface LedgerContextValue {
   targetDate: Date | null;
   addPayment: (draft: PaymentDraft) => void;
   updateSettings: (settings: LedgerSettings) => void;
+  setDebtSharePercent: (percent: number) => void;
   setPaymentDraft: (draft: PaymentDraftPrefill | null) => void;
   clearPaymentDraft: () => void;
   clearAllPayments: () => void;
@@ -82,6 +88,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
 
   const repaymentActive = settings?.repaymentActive ?? false;
   const totalDebt = settings?.totalDebt ?? 0;
+  const debtSharePercent = settings?.debtSharePercent ?? 30;
 
   const debtPayments = useMemo(
     () => payments.filter((p) => p.kind === "debt_payment"),
@@ -107,8 +114,8 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
 
   const effectiveTowardGoal = useMemo(() => {
     if (repaymentActive) return totalPaidTowardDebt;
-    return sumDebtContributions(incomeEntries);
-  }, [repaymentActive, totalPaidTowardDebt, incomeEntries]);
+    return sumDebtContributions(incomeEntries, debtSharePercent);
+  }, [repaymentActive, totalPaidTowardDebt, incomeEntries, debtSharePercent]);
 
   const milestone = useMemo(() => {
     if (!repaymentActive) {
@@ -123,10 +130,17 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
 
   const targetDate = useMemo(() => {
     if (repaymentActive) {
-      return estimatePayoffDate(totalRemaining, debtPayments);
+      return estimatePayoffDate(totalRemaining, debtPayments, debtSharePercent);
     }
-    return estimatePayoffDate(totalDebt, incomeEntries);
-  }, [repaymentActive, totalRemaining, totalDebt, debtPayments, incomeEntries]);
+    return estimatePayoffDate(totalDebt, incomeEntries, debtSharePercent);
+  }, [
+    repaymentActive,
+    totalRemaining,
+    totalDebt,
+    debtPayments,
+    incomeEntries,
+    debtSharePercent,
+  ]);
 
   const addPayment = useCallback(
     (draft: PaymentDraft) => {
@@ -148,7 +162,21 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   );
 
   const updateSettings = useCallback((next: LedgerSettings) => {
-    setSettings(next);
+    setSettings({
+      ...next,
+      debtSharePercent: normalizeDebtSharePercent(next.debtSharePercent),
+    });
+  }, []);
+
+  const setDebtSharePercent = useCallback((percent: number) => {
+    setSettings((prev) =>
+      prev
+        ? {
+            ...prev,
+            debtSharePercent: normalizeDebtSharePercent(percent),
+          }
+        : prev
+    );
   }, []);
 
   const clearPaymentDraft = useCallback(() => {
@@ -177,6 +205,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
         settings,
         paymentDraft,
         repaymentActive,
+        debtSharePercent,
         totalPaidTowardDebt,
         totalIncomeLogged,
         effectiveTowardGoal,
@@ -186,6 +215,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
         targetDate,
         addPayment,
         updateSettings,
+        setDebtSharePercent,
         setPaymentDraft,
         clearPaymentDraft,
         clearAllPayments,

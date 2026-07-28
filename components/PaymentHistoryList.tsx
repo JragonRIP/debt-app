@@ -10,12 +10,12 @@ import {
   getEntryKind,
   parseLocalDate,
 } from "@/lib/projections";
-import { DEBT_SHARE } from "@/lib/revenue-slice";
 import { Card } from "./ui/Card";
 
 interface PaymentHistoryListProps {
   payments: Payment[];
   repaymentActive: boolean;
+  debtSharePercent: number;
 }
 
 function StatusBadge({ status }: { status: Payment["status"] }) {
@@ -51,6 +51,7 @@ function KindBadge({ kind }: { kind: ReturnType<typeof getEntryKind> }) {
 export function PaymentHistoryList({
   payments,
   repaymentActive,
+  debtSharePercent,
 }: PaymentHistoryListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -72,7 +73,9 @@ export function PaymentHistoryList({
             const open = expandedId === payment.id;
             const kind = getEntryKind(payment);
             const slice =
-              kind === "income" ? debtContributionAmount(payment) : null;
+              kind === "income"
+                ? debtContributionAmount(payment, debtSharePercent)
+                : null;
 
             return (
               <li key={payment.id}>
@@ -114,7 +117,7 @@ export function PaymentHistoryList({
                     </div>
                     {slice != null && (
                       <p className="mt-2 text-xs text-white/45">
-                        {Math.round(DEBT_SHARE * 100)}% toward payoff pace:{" "}
+                        {debtSharePercent}% toward payoff pace:{" "}
                         <span className="text-chrome-bright">
                           {formatCurrency(slice)}
                         </span>
