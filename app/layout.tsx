@@ -15,14 +15,14 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Impala Ledger",
+  title: "1500 Ledger",
   description:
-    "Personal buy-back debt ledger for the 1968 Chevy Impala payment plan.",
-  applicationName: "Impala Ledger",
+    "Personal buy-back debt ledger for the 2012 Chevrolet 1500 Regular Cab Short Bed payment plan.",
+  applicationName: "1500 Ledger",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Impala Ledger",
+    title: "1500 Ledger",
   },
   formatDetection: {
     telephone: false,
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a1f15",
+  themeColor: "#0a1528",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
