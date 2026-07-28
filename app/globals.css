@@ -120,3 +120,52 @@ body {
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.85);
 }
+
+.debt-share-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.35),
+    rgba(226, 232, 240, 0.75)
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.debt-share-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  border: 2px solid rgba(226, 232, 240, 0.9);
+  background: linear-gradient(180deg, #e2e8f0 0%, #94a3b8 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.debt-share-slider::-webkit-slider-thumb:active {
+  transform: scale(1.08);
+}
+
+.debt-share-slider::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  border: 2px solid rgba(226, 232, 240, 0.9);
+  background: linear-gradient(180deg, #e2e8f0 0%, #94a3b8 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.debt-share-slider::-moz-range-track {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.35),
+    rgba(226, 232, 240, 0.75)
+  );
+}

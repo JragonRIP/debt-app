@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           title: repaymentActive ? "Log Payment" : "Log Income",
           subtitle: repaymentActive
             ? "Record a payment to Dad"
-            : "Track job earnings (30% used in projections)",
+            : `Track job earnings (${settings.debtSharePercent}% used in projections)`,
         }
       : baseMeta;
 

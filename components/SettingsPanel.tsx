@@ -2,7 +2,10 @@
 
 import { Settings, Trash2, X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
-import type { LedgerSettings } from "@/lib/types";
+import {
+  normalizeDebtSharePercent,
+  type LedgerSettings,
+} from "@/lib/types";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -42,6 +45,9 @@ export function SettingsPanel({
   const [repaymentActive, setRepaymentActive] = useState(
     settings.repaymentActive
   );
+  const [debtSharePercent, setDebtSharePercent] = useState(
+    settings.debtSharePercent
+  );
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
@@ -49,6 +55,7 @@ export function SettingsPanel({
       setTotalDebt(String(settings.totalDebt));
       setMilestoneStep(String(settings.milestoneStep));
       setRepaymentActive(settings.repaymentActive);
+      setDebtSharePercent(settings.debtSharePercent);
       setConfirmClear(false);
     }
   }, [open, settings]);
@@ -61,6 +68,7 @@ export function SettingsPanel({
       totalDebt: Math.max(0, parseFloat(totalDebt) || 0),
       milestoneStep: Math.max(100, parseFloat(milestoneStep) || 500),
       repaymentActive,
+      debtSharePercent: normalizeDebtSharePercent(debtSharePercent),
     });
     onClose();
   }
@@ -122,6 +130,34 @@ export function SettingsPanel({
             />
           </label>
 
+          <div className="rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-white">Percent to Dad</p>
+                <p className="mt-0.5 text-xs text-white/45">
+                  Share of net job earnings for debt
+                </p>
+              </div>
+              <p className="font-display text-xl font-semibold text-chrome-bright tabular-nums">
+                {debtSharePercent}%
+              </p>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              step={1}
+              value={debtSharePercent}
+              onChange={(e) => setDebtSharePercent(Number(e.target.value))}
+              className="debt-share-slider w-full"
+              aria-label="Percent of net earnings to pay Dad"
+            />
+            <div className="mt-1.5 flex justify-between text-[11px] text-white/40">
+              <span>1%</span>
+              <span>100%</span>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
             <p className="text-sm font-medium text-white">Paying Dad back</p>
             <button
@@ -154,8 +190,8 @@ export function SettingsPanel({
           </p>
           <p className="mb-4 text-xs text-white/45">
             Removes all income and payment history and clears calculator
-            pre-fills. Debt total, milestone, and the paying-Dad toggle stay
-            the same.
+            pre-fills. Debt total, milestone, Dad percent, and the paying-Dad
+            toggle stay the same.
           </p>
           {!confirmClear ? (
             <button
