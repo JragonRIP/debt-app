@@ -12,7 +12,7 @@ import { useLedger } from "@/context/LedgerContext";
 import { Card } from "./ui/Card";
 
 const inputClass =
-  "w-full rounded-xl border border-chrome/25 bg-forest-950/80 px-4 py-3 text-white placeholder:text-white/35 outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
+  "w-full rounded-xl border border-chrome/25 bg-navy-950/80 px-4 py-3 text-white placeholder:text-white/35 outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
 
 export function RevenueSlicingCalculator() {
   const router = useRouter();
@@ -114,7 +114,7 @@ export function RevenueSlicingCalculator() {
         </label>
       </div>
 
-      <div className="mt-5 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-4">
+      <div className="mt-5 rounded-xl border border-chrome/20 bg-navy-950/50 px-4 py-4">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-chrome/70">
@@ -158,7 +158,7 @@ export function RevenueSlicingCalculator() {
               className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
                 row.accent
                   ? "border-chrome/40 bg-chrome/10"
-                  : "border-chrome/15 bg-forest-950/50"
+                  : "border-chrome/15 bg-navy-950/50"
               }`}
             >
               <div>

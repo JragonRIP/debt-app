@@ -18,7 +18,7 @@ interface LogPaymentFormProps {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-chrome/25 bg-forest-950/80 px-4 py-3 text-white placeholder:text-white/35 outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
+  "w-full rounded-xl border border-chrome/25 bg-navy-950/80 px-4 py-3 text-white placeholder:text-white/35 outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
 
 export function LogPaymentForm({
   onSubmit,

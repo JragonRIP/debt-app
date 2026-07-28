@@ -7,7 +7,7 @@ import { SettingsButton, SettingsPanel } from "@/components/SettingsPanel";
 import { useLedger } from "@/context/LedgerContext";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
-  "/": { title: "Impala Ledger", subtitle: "Buy-back dashboard" },
+  "/": { title: "1500 Ledger", subtitle: "Buy-back dashboard" },
   "/pay": { title: "Log Payment", subtitle: "Record a new payment" },
   "/calculator": { title: "Revenue Split", subtitle: "Detailing job calculator" },
   "/history": { title: "Payment History", subtitle: "Tap a row for details" },

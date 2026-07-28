@@ -10,7 +10,7 @@ interface CardProps {
 export function Card({ children, className = "", title, icon }: CardProps) {
   return (
     <section
-      className={`impala-card rounded-2xl border border-chrome/25 bg-forest-900/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-6 ${className}`}
+      className={`truck-card rounded-2xl border border-chrome/25 bg-navy-900/80 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:p-6 ${className}`}
     >
       {(title || icon) && (
         <header className="mb-5 flex items-center gap-3">

@@ -24,7 +24,7 @@ function StatusBadge({ status }: { status: Payment["status"] }) {
     <span
       className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${
         verified
-          ? "border-emerald-400/40 bg-emerald-900/50 text-emerald-200"
+          ? "border-sky-400/40 bg-sky-900/50 text-sky-200"
           : "border-amber-400/35 bg-amber-950/40 text-amber-200"
       }`}
     >
@@ -102,7 +102,7 @@ export function PaymentHistoryList({
                   </span>
                 </button>
                 {open && (
-                  <div className="border-t border-chrome/10 bg-forest-950/50 px-1 pb-4 pt-2">
+                  <div className="border-t border-chrome/10 bg-navy-950/50 px-1 pb-4 pt-2">
                     <p className="text-xs font-medium uppercase tracking-wider text-chrome/55">
                       Description
                     </p>

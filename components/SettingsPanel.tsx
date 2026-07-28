@@ -16,14 +16,14 @@ interface SettingsPanelProps {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-chrome/25 bg-forest-950/80 px-4 py-3 text-white outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
+  "w-full rounded-xl border border-chrome/25 bg-navy-950/80 px-4 py-3 text-white outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
 
 export function SettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-chrome/35 bg-forest-900/90 text-chrome-bright shadow-lg transition hover:border-chrome/60 hover:bg-chrome/10"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-chrome/35 bg-navy-900/90 text-chrome-bright shadow-lg transition hover:border-chrome/60 hover:bg-chrome/10"
       aria-label="Open settings"
     >
       <Settings className="h-5 w-5" />
@@ -81,7 +81,7 @@ export function SettingsPanel({
         onClick={onClose}
         aria-label="Close settings"
       />
-      <div className="relative z-10 w-full max-w-md rounded-t-3xl border border-chrome/30 bg-forest-900 p-6 shadow-2xl sm:rounded-3xl">
+      <div className="relative z-10 w-full max-w-md rounded-t-3xl border border-chrome/30 bg-navy-900 p-6 shadow-2xl sm:rounded-3xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-display text-xl font-semibold text-white">
             Ledger Settings
@@ -130,7 +130,7 @@ export function SettingsPanel({
             />
           </label>
 
-          <div className="rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
+          <div className="rounded-xl border border-chrome/20 bg-navy-950/50 px-4 py-3">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div>
                 <p className="text-sm font-medium text-white">Percent to Dad</p>
@@ -158,7 +158,7 @@ export function SettingsPanel({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-navy-950/50 px-4 py-3">
             <p className="text-sm font-medium text-white">Paying Dad back</p>
             <button
               type="button"
@@ -168,7 +168,7 @@ export function SettingsPanel({
               className={`relative h-7 w-12 shrink-0 rounded-full border transition ${
                 repaymentActive
                   ? "border-chrome/50 bg-chrome/25"
-                  : "border-chrome/25 bg-forest-950"
+                  : "border-chrome/25 bg-navy-950"
               }`}
             >
               <span
