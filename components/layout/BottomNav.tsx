@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Calculator, DollarSign, Gauge, List } from "lucide-react";
 
 const links = [
-  { href: "/", label: "Dashboard", icon: Gauge },
+  { href: "/", label: "Dash", icon: Gauge },
   { href: "/pay", label: "Pay", icon: DollarSign },
   { href: "/calculator", label: "Split", icon: Calculator },
   { href: "/history", label: "History", icon: List },
@@ -16,7 +16,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-chrome/20 bg-forest-900/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-bronze/25 bg-dash-900/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md"
       aria-label="Main navigation"
     >
       <div className="mx-auto flex max-w-lg items-stretch justify-around px-2 pt-2 sm:max-w-xl">
@@ -29,14 +29,14 @@ export function BottomNav() {
               href={href}
               className={`flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-xs font-medium transition ${
                 active
-                  ? "text-chrome-bright"
-                  : "text-chrome/55 hover:text-chrome/80"
+                  ? "text-dash-green"
+                  : "text-bronze-bright/45 hover:text-bronze-bright/80"
               }`}
             >
               <span
                 className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${
                   active
-                    ? "border-chrome/45 bg-chrome/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                    ? "border-dash-green/45 bg-dash-green/10 shadow-[0_0_12px_rgba(57,255,120,0.2)]"
                     : "border-transparent"
                 }`}
               >

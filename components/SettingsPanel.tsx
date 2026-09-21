@@ -1,7 +1,7 @@
 "use client";
 
 import { Settings, Trash2, X } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import type { LedgerSettings } from "@/lib/types";
 
 interface SettingsPanelProps {
@@ -13,14 +13,14 @@ interface SettingsPanelProps {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-chrome/25 bg-forest-950/80 px-4 py-3 text-white outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
+  "w-full rounded-xl border border-bronze/30 bg-dash-950/80 px-4 py-3 font-digital text-lg text-dash-green outline-none transition focus:border-dash-green/50 focus:ring-2 focus:ring-dash-green/20";
 
 export function SettingsButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-chrome/35 bg-forest-900/90 text-chrome-bright shadow-lg transition hover:border-chrome/60 hover:bg-chrome/10"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-bronze/40 bg-dash-900/90 text-bronze-bright shadow-lg transition hover:border-dash-green/50 hover:text-dash-green"
       aria-label="Open settings"
     >
       <Settings className="h-5 w-5" />
@@ -35,32 +35,35 @@ export function SettingsPanel({
   onSave,
   onClearAllPayments,
 }: SettingsPanelProps) {
+  if (!open) return null;
+
+  return (
+    <SettingsForm
+      settings={settings}
+      onClose={onClose}
+      onSave={onSave}
+      onClearAllPayments={onClearAllPayments}
+    />
+  );
+}
+
+function SettingsForm({
+  settings,
+  onClose,
+  onSave,
+  onClearAllPayments,
+}: Omit<SettingsPanelProps, "open">) {
   const [totalDebt, setTotalDebt] = useState(String(settings.totalDebt));
   const [milestoneStep, setMilestoneStep] = useState(
     String(settings.milestoneStep)
   );
-  const [repaymentActive, setRepaymentActive] = useState(
-    settings.repaymentActive
-  );
   const [confirmClear, setConfirmClear] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setTotalDebt(String(settings.totalDebt));
-      setMilestoneStep(String(settings.milestoneStep));
-      setRepaymentActive(settings.repaymentActive);
-      setConfirmClear(false);
-    }
-  }, [open, settings]);
-
-  if (!open) return null;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     onSave({
       totalDebt: Math.max(0, parseFloat(totalDebt) || 0),
       milestoneStep: Math.max(100, parseFloat(milestoneStep) || 500),
-      repaymentActive,
     });
     onClose();
   }
@@ -73,15 +76,15 @@ export function SettingsPanel({
         onClick={onClose}
         aria-label="Close settings"
       />
-      <div className="relative z-10 w-full max-w-md rounded-t-3xl border border-chrome/30 bg-forest-900 p-6 shadow-2xl sm:rounded-3xl">
+      <div className="relative z-10 w-full max-w-md rounded-t-3xl border border-bronze/30 bg-dash-900 p-6 shadow-2xl sm:rounded-3xl">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold text-white">
+          <h2 className="font-display text-xl font-semibold text-bronze-bright">
             Ledger Settings
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-chrome/80 transition hover:bg-chrome/10"
+            className="rounded-full p-2 text-bronze-bright/80 transition hover:bg-bronze/10"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -90,8 +93,8 @@ export function SettingsPanel({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <label className="block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-chrome/70">
-              Total Debt Amount ($)
+            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
+              Starting note ($)
             </span>
             <input
               type="number"
@@ -103,12 +106,13 @@ export function SettingsPanel({
               className={inputClass}
             />
             <p className="mt-1.5 text-xs text-white/45">
-              Original buy-back balance from Dad
+              Original balance. Extra borrows are logged on the Pay tab and
+              stack on top of this.
             </p>
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-chrome/70">
+            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
               Milestone Step ($)
             </span>
             <input
@@ -122,40 +126,18 @@ export function SettingsPanel({
             />
           </label>
 
-          <div className="flex items-center justify-between gap-4 rounded-xl border border-chrome/20 bg-forest-950/50 px-4 py-3">
-            <p className="text-sm font-medium text-white">Paying Dad back</p>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={repaymentActive}
-              onClick={() => setRepaymentActive((v) => !v)}
-              className={`relative h-7 w-12 shrink-0 rounded-full border transition ${
-                repaymentActive
-                  ? "border-chrome/50 bg-chrome/25"
-                  : "border-chrome/25 bg-forest-950"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 block h-5 w-5 rounded-full bg-chrome-bright shadow transition ${
-                  repaymentActive ? "left-[1.35rem]" : "left-0.5"
-                }`}
-              />
-            </button>
-          </div>
-
-          <button type="submit" className="chrome-button w-full">
+          <button type="submit" className="dash-button w-full">
             Save Settings
           </button>
         </form>
 
-        <div className="mt-8 border-t border-chrome/15 pt-6">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-chrome/70">
+        <div className="mt-8 border-t border-bronze/20 pt-6">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
             Danger zone
           </p>
           <p className="mb-4 text-xs text-white/45">
-            Removes all income and payment history and clears calculator
-            pre-fills. Debt total, milestone, and the paying-Dad toggle stay
-            the same.
+            Removes all payment and borrow history. Starting note and
+            milestone stay the same.
           </p>
           {!confirmClear ? (
             <button
@@ -163,18 +145,18 @@ export function SettingsPanel({
               onClick={() => setConfirmClear(true)}
               className="w-full rounded-xl border border-red-400/35 bg-red-950/40 px-4 py-3 text-sm font-medium text-red-200 transition hover:border-red-400/55 hover:bg-red-950/60"
             >
-              Clear all payments
+              Clear all entries
             </button>
           ) : (
             <div className="space-y-3">
               <p className="text-sm text-red-200/90">
-                This cannot be undone. Delete all payment history?
+                This cannot be undone. Delete all ledger history?
               </p>
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => setConfirmClear(false)}
-                  className="flex-1 rounded-xl border border-chrome/25 px-4 py-3 text-sm font-medium text-white/80 transition hover:bg-chrome/10"
+                  className="flex-1 rounded-xl border border-bronze/25 px-4 py-3 text-sm font-medium text-white/80 transition hover:bg-bronze/10"
                 >
                   Cancel
                 </button>

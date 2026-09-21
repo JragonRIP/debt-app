@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Playfair_Display } from "next/font/google";
+import { Geist, Orbitron, Playfair_Display } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -14,15 +14,21 @@ const playfair = Playfair_Display({
   weight: ["500", "600", "700"],
 });
 
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Impala Ledger",
+  title: "Marquis Ledger",
   description:
-    "Personal buy-back debt ledger for the 1968 Chevy Impala payment plan.",
-  applicationName: "Impala Ledger",
+    "Debt ledger for a 1999 Mercury Grand Marquis. Log payments and added borrows.",
+  applicationName: "Marquis Ledger",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Impala Ledger",
+    title: "Marquis Ledger",
   },
   formatDetection: {
     telephone: false,
@@ -37,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a1f15",
+  themeColor: "#0a100c",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -53,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${playfair.variable} h-full`}
+      className={`${geistSans.variable} ${playfair.variable} ${orbitron.variable} h-full`}
     >
       <body className="min-h-dvh antialiased pb-safe">
         <Providers>{children}</Providers>

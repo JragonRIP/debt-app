@@ -9,11 +9,10 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { LedgerSettings, Payment } from "@/lib/types";
+import type { LedgerEntryKind, LedgerSettings, Payment } from "@/lib/types";
 import {
   estimatePayoffDate,
   getNextMilestone,
-  sumDebtContributions,
   sumPayments,
 } from "@/lib/projections";
 import {
@@ -25,11 +24,10 @@ import {
 } from "@/lib/storage";
 import type { PaymentDraft } from "@/components/LogPaymentForm";
 
-const FRESH_START_KEY = "impala-ledger-fresh-start-v3";
-
 export interface PaymentDraftPrefill {
   amount: number;
   description: string;
+  kind?: LedgerEntryKind;
 }
 
 interface LedgerContextValue {
@@ -37,10 +35,9 @@ interface LedgerContextValue {
   payments: Payment[];
   settings: LedgerSettings;
   paymentDraft: PaymentDraftPrefill | null;
-  repaymentActive: boolean;
   totalPaidTowardDebt: number;
-  totalIncomeLogged: number;
-  effectiveTowardGoal: number;
+  totalBorrowed: number;
+  principal: number;
   totalRemaining: number;
   percentPaid: number;
   milestone: ReturnType<typeof getNextMilestone>;
@@ -63,10 +60,6 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(FRESH_START_KEY)) {
-      clearPaymentsStorage();
-      localStorage.setItem(FRESH_START_KEY, "1");
-    }
     setPayments(loadPayments());
     setSettings(loadSettings());
     setHydrated(true);
@@ -80,15 +73,14 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     if (hydrated && settings) saveSettings(settings);
   }, [settings, hydrated]);
 
-  const repaymentActive = settings?.repaymentActive ?? false;
-  const totalDebt = settings?.totalDebt ?? 0;
+  const startingNote = settings?.totalDebt ?? 0;
 
   const debtPayments = useMemo(
-    () => payments.filter((p) => p.kind === "debt_payment"),
+    () => payments.filter((p) => (p.kind ?? "debt_payment") === "debt_payment"),
     [payments]
   );
-  const incomeEntries = useMemo(
-    () => payments.filter((p) => p.kind === "income"),
+  const borrowEntries = useMemo(
+    () => payments.filter((p) => p.kind === "borrow"),
     [payments]
   );
 
@@ -96,56 +88,46 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     () => sumPayments(debtPayments),
     [debtPayments]
   );
-  const totalIncomeLogged = useMemo(
-    () => sumPayments(incomeEntries),
-    [incomeEntries]
+  const totalBorrowed = useMemo(
+    () => sumPayments(borrowEntries),
+    [borrowEntries]
   );
 
-  const totalRemaining = Math.max(0, totalDebt - totalPaidTowardDebt);
+  const principal = startingNote + totalBorrowed;
+  const totalRemaining = Math.max(0, principal - totalPaidTowardDebt);
   const percentPaid =
-    totalDebt > 0 ? (totalPaidTowardDebt / totalDebt) * 100 : 0;
+    principal > 0 ? (totalPaidTowardDebt / principal) * 100 : 0;
 
-  const effectiveTowardGoal = useMemo(() => {
-    if (repaymentActive) return totalPaidTowardDebt;
-    return sumDebtContributions(incomeEntries);
-  }, [repaymentActive, totalPaidTowardDebt, incomeEntries]);
-
-  const milestone = useMemo(() => {
-    if (!repaymentActive) {
-      return { label: "—", amount: 0, progress: 0 };
-    }
-    return getNextMilestone(
-      totalPaidTowardDebt,
-      totalDebt,
-      settings?.milestoneStep ?? 500
-    );
-  }, [repaymentActive, totalPaidTowardDebt, totalDebt, settings?.milestoneStep]);
-
-  const targetDate = useMemo(() => {
-    if (repaymentActive) {
-      return estimatePayoffDate(totalRemaining, debtPayments);
-    }
-    return estimatePayoffDate(totalDebt, incomeEntries);
-  }, [repaymentActive, totalRemaining, totalDebt, debtPayments, incomeEntries]);
-
-  const addPayment = useCallback(
-    (draft: PaymentDraft) => {
-      const amount = parseFloat(draft.amount);
-      if (!amount || amount <= 0) return;
-      const kind = repaymentActive ? "debt_payment" : "income";
-      const payment: Payment = {
-        id: crypto.randomUUID(),
-        amount,
-        description: draft.description,
-        date: draft.date,
-        status: "pending",
-        kind,
-      };
-      setPayments((prev) => [...prev, payment]);
-      setPaymentDraft(null);
-    },
-    [repaymentActive]
+  const milestone = useMemo(
+    () =>
+      getNextMilestone(
+        totalPaidTowardDebt,
+        principal,
+        settings?.milestoneStep ?? 500
+      ),
+    [totalPaidTowardDebt, principal, settings?.milestoneStep]
   );
+
+  const targetDate = useMemo(
+    () => estimatePayoffDate(totalRemaining, debtPayments),
+    [totalRemaining, debtPayments]
+  );
+
+  const addPayment = useCallback((draft: PaymentDraft) => {
+    const amount = parseFloat(draft.amount);
+    if (!amount || amount <= 0) return;
+    const kind: LedgerEntryKind = draft.kind ?? "debt_payment";
+    const payment: Payment = {
+      id: crypto.randomUUID(),
+      amount,
+      description: draft.description,
+      date: draft.date,
+      status: "pending",
+      kind,
+    };
+    setPayments((prev) => [...prev, payment]);
+    setPaymentDraft(null);
+  }, []);
 
   const updateSettings = useCallback((next: LedgerSettings) => {
     setSettings(next);
@@ -163,8 +145,8 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
 
   if (!hydrated || !settings) {
     return (
-      <div className="flex min-h-dvh items-center justify-center text-chrome/60">
-        Loading ledger…
+      <div className="flex min-h-dvh items-center justify-center font-digital text-dash-green/70">
+        IGNITION...
       </div>
     );
   }
@@ -176,10 +158,9 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
         payments,
         settings,
         paymentDraft,
-        repaymentActive,
         totalPaidTowardDebt,
-        totalIncomeLogged,
-        effectiveTowardGoal,
+        totalBorrowed,
+        principal,
         totalRemaining,
         percentPaid,
         milestone,

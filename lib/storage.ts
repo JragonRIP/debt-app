@@ -1,7 +1,7 @@
 import { DEFAULT_SETTINGS, type LedgerSettings, type Payment } from "./types";
 
-const PAYMENTS_KEY = "impala-ledger-payments-v2";
-const SETTINGS_KEY = "impala-ledger-settings";
+const PAYMENTS_KEY = "marquis-ledger-payments-v1";
+const SETTINGS_KEY = "marquis-ledger-settings-v1";
 
 function normalizePayment(p: Payment): Payment {
   return {
@@ -30,7 +30,11 @@ export function loadSettings(): LedgerSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw) as Partial<LedgerSettings>;
+    return {
+      totalDebt: parsed.totalDebt ?? DEFAULT_SETTINGS.totalDebt,
+      milestoneStep: parsed.milestoneStep ?? DEFAULT_SETTINGS.milestoneStep,
+    };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -44,5 +48,4 @@ export function saveSettings(settings: LedgerSettings): void {
 export function clearPaymentsStorage(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(PAYMENTS_KEY);
-  localStorage.removeItem("impala-ledger-payments");
 }

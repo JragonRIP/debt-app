@@ -11,7 +11,7 @@ export function parseLocalDate(dateStr: string): Date {
   return new Date(y, m - 1, d);
 }
 
-/** Dollars that count toward Dad / debt pace (30% of income entries). */
+/** Dollars that count toward payoff pace (30% of leftover income entries). */
 export function debtContributionAmount(payment: Payment): number {
   const kind = getEntryKind(payment);
   if (kind === "income") return payment.amount * DEBT_SHARE;

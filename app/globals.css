@@ -1,23 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --forest-pearl: #0a1f15;
-  --forest-card: #0f2a1c;
-  --forest-deep: #061410;
-  --chrome-mid: #a8b4c0;
-  --chrome-bright: #e8edf2;
+  --dash-950: #050806;
+  --dash-900: #0a100c;
+  --dash-800: #121a14;
+  --dash-green: #39ff78;
+  --bronze: #c4924a;
+  --bronze-bright: #e2c08a;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @theme inline {
-  --color-forest-950: #061410;
-  --color-forest-900: #0a1f15;
-  --color-forest-800: #0f2a1c;
-  --color-chrome: #94a3b8;
-  --color-chrome-bright: #e2e8f0;
+  --color-dash-950: #050806;
+  --color-dash-900: #0a100c;
+  --color-dash-800: #121a14;
+  --color-dash-green: #39ff78;
+  --color-bronze: #c4924a;
+  --color-bronze-bright: #e2c08a;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-display: var(--font-playfair), Georgia, serif;
+  --font-digital: var(--font-orbitron), ui-monospace, monospace;
 }
 
 html {
@@ -27,48 +30,54 @@ html {
 body {
   min-height: 100dvh;
   background: radial-gradient(
-      ellipse 120% 80% at 50% -20%,
-      rgba(34, 90, 62, 0.35),
-      transparent 55%
+      ellipse 90% 60% at 50% -10%,
+      rgba(57, 255, 120, 0.12),
+      transparent 50%
     ),
-    linear-gradient(180deg, var(--forest-pearl) 0%, var(--forest-deep) 100%);
-  color: var(--chrome-bright);
+    radial-gradient(
+      ellipse 70% 50% at 80% 110%,
+      rgba(196, 146, 74, 0.14),
+      transparent 45%
+    ),
+    linear-gradient(180deg, var(--dash-900) 0%, var(--dash-950) 100%);
+  color: #f4efe4;
   font-family: var(--font-sans);
 }
 
-.impala-hero {
+.marquis-hero {
   background: linear-gradient(
     145deg,
-    rgba(15, 42, 28, 0.95) 0%,
-    rgba(10, 31, 21, 0.98) 50%,
-    rgba(6, 20, 16, 1) 100%
+    rgba(18, 26, 20, 0.96) 0%,
+    rgba(10, 16, 12, 0.98) 52%,
+    rgba(5, 8, 6, 1) 100%
   );
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 20px 50px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 0 rgba(226, 192, 138, 0.18),
+    0 0 40px rgba(57, 255, 120, 0.06), 0 20px 50px rgba(0, 0, 0, 0.5);
 }
 
-.impala-card {
+.marquis-card {
   background: linear-gradient(
     160deg,
-    rgba(15, 42, 28, 0.88) 0%,
-    rgba(10, 31, 21, 0.92) 100%
+    rgba(18, 26, 20, 0.9) 0%,
+    rgba(10, 16, 12, 0.94) 100%
   );
 }
 
-.chrome-bar {
+.bronze-bar {
   background: linear-gradient(
     90deg,
-    #6b7280 0%,
-    #d1d5db 25%,
-    #f3f4f6 50%,
-    #d1d5db 75%,
-    #9ca3af 100%
+    #8a5a22 0%,
+    #c4924a 28%,
+    #f0d9a8 50%,
+    #c4924a 72%,
+    #8a5a22 100%
   );
   background-size: 200% 100%;
-  animation: chrome-shine 3s ease-in-out infinite;
+  animation: bronze-shine 3s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(196, 146, 74, 0.45);
 }
 
-@keyframes chrome-shine {
+@keyframes bronze-shine {
   0%,
   100% {
     background-position: 0% 50%;
@@ -78,34 +87,41 @@ body {
   }
 }
 
-.chrome-button {
+.dash-button,
+.bronze-button {
   border-radius: 0.875rem;
-  border: 1px solid rgba(226, 232, 240, 0.45);
-  background: linear-gradient(
-    180deg,
-    #e2e8f0 0%,
-    #94a3b8 45%,
-    #64748b 100%
-  );
   padding: 0.875rem 1.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #0a1f15;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65),
-    0 4px 14px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.chrome-button:hover:not(:disabled) {
+.dash-button {
+  border: 1px solid rgba(57, 255, 120, 0.45);
+  background: linear-gradient(180deg, #1a3d28 0%, #0c1a12 100%);
+  color: var(--dash-green);
+  box-shadow: inset 0 1px 0 rgba(57, 255, 120, 0.25),
+    0 0 18px rgba(57, 255, 120, 0.15);
+}
+
+.bronze-button {
+  border: 1px solid rgba(226, 192, 138, 0.5);
+  background: linear-gradient(180deg, #e2c08a 0%, #c4924a 48%, #8a5a22 100%);
+  color: #1a1208;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.dash-button:hover:not(:disabled),
+.bronze-button:hover:not(:disabled) {
   filter: brightness(1.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 6px 20px rgba(0, 0, 0, 0.4);
   transform: translateY(-1px);
 }
 
-.chrome-button:active:not(:disabled) {
+.dash-button:active:not(:disabled),
+.bronze-button:active:not(:disabled) {
   transform: translateY(0);
 }
 
@@ -118,5 +134,5 @@ body {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.85);
+  filter: invert(0.85) sepia(1) saturate(4) hue-rotate(70deg);
 }

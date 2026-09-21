@@ -13,11 +13,11 @@ import { useLedger } from "@/context/LedgerContext";
 import { Card } from "./ui/Card";
 
 const inputClass =
-  "w-full rounded-xl border border-chrome/25 bg-forest-950/80 px-4 py-3 text-white placeholder:text-white/35 outline-none transition focus:border-chrome/60 focus:ring-2 focus:ring-chrome/20";
+  "w-full rounded-xl border border-bronze/30 bg-dash-950/80 px-4 py-3 font-digital text-lg tracking-wide text-dash-green placeholder:text-dash-green/30 outline-none transition focus:border-dash-green/50 focus:ring-2 focus:ring-dash-green/20";
 
 export function RevenueSlicingCalculator() {
   const router = useRouter();
-  const { setPaymentDraft, repaymentActive } = useLedger();
+  const { setPaymentDraft } = useLedger();
   const [earnings, setEarnings] = useState("");
   const [hours, setHours] = useState("");
 
@@ -30,17 +30,11 @@ export function RevenueSlicingCalculator() {
 
   function handleApply() {
     if (!slice || slice.gross <= 0) return;
-    if (repaymentActive) {
-      setPaymentDraft({
-        amount: Math.round(slice.debtPayment * 100) / 100,
-        description: `Payment to Dad — ${hours || 0}h job (${formatCurrency(slice.gross)} gross)`,
-      });
-    } else {
-      setPaymentDraft({
-        amount: Math.round(slice.gross * 100) / 100,
-        description: `Detailing job — ${hours || 0}h (${formatCurrency(slice.gross)} gross)`,
-      });
-    }
+    setPaymentDraft({
+      amount: Math.round(slice.debtPayment * 100) / 100,
+      description: `Payment — ${hours || 0}h job (${formatCurrency(slice.gross)} gross)`,
+      kind: "debt_payment",
+    });
     router.push("/pay");
   }
 
@@ -55,9 +49,7 @@ export function RevenueSlicingCalculator() {
         { label: "Savings", sub: "50%", value: slice.savings, accent: false },
         {
           label: "Suggested Debt Payment",
-          sub: repaymentActive
-            ? `${Math.round(DEBT_SHARE * 100)}% — sent to Pay tab`
-            : `${Math.round(DEBT_SHARE * 100)}% — used in payoff projection`,
+          sub: `${Math.round(DEBT_SHARE * 100)}% — sent to Pay tab`,
           value: slice.debtPayment,
           accent: true,
         },
@@ -74,7 +66,7 @@ export function RevenueSlicingCalculator() {
     <Card title="Revenue Slicing" icon={<Calculator className="h-4 w-4" />}>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-chrome/70">
+          <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
             <DollarSign className="h-3.5 w-3.5" />
             Job Earnings
           </span>
@@ -89,7 +81,7 @@ export function RevenueSlicingCalculator() {
           />
         </label>
         <label className="block">
-          <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-chrome/70">
+          <span className="mb-1.5 flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
             <Clock className="h-3.5 w-3.5" />
             Time (hours)
           </span>
@@ -107,7 +99,7 @@ export function RevenueSlicingCalculator() {
 
       {slice && (
         <div className="mt-6 space-y-3">
-          <p className="text-xs uppercase tracking-wider text-chrome/60">
+          <p className="font-digital text-xs uppercase tracking-wider text-dash-green/70">
             Net after labor: {formatCurrency(slice.netAfterLabor)}
           </p>
           {rows.map((row) => (
@@ -115,8 +107,8 @@ export function RevenueSlicingCalculator() {
               key={row.label}
               className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
                 row.accent
-                  ? "border-chrome/40 bg-chrome/10"
-                  : "border-chrome/15 bg-forest-950/50"
+                  ? "border-dash-green/40 bg-dash-green/10"
+                  : "border-bronze/20 bg-dash-950/50"
               }`}
             >
               <div>
@@ -124,8 +116,8 @@ export function RevenueSlicingCalculator() {
                 <p className="text-xs text-white/45">{row.sub}</p>
               </div>
               <p
-                className={`font-display text-lg font-semibold ${
-                  row.accent ? "text-chrome-bright" : "text-white/90"
+                className={`font-digital text-lg font-semibold tracking-wide ${
+                  row.accent ? "text-dash-green" : "text-bronze-bright"
                 }`}
               >
                 {formatCurrency(row.value)}
@@ -137,11 +129,9 @@ export function RevenueSlicingCalculator() {
             type="button"
             onClick={handleApply}
             disabled={slice.gross <= 0}
-            className="chrome-button mt-2 w-full disabled:cursor-not-allowed disabled:opacity-40"
+            className="dash-button mt-2 w-full disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {repaymentActive
-              ? "Apply Debt Payment — Go to Pay"
-              : "Log Job Income — Go to Pay"}
+            Apply Debt Payment — Go to Pay
           </button>
         </div>
       )}

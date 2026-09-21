@@ -7,36 +7,25 @@ import { SettingsButton, SettingsPanel } from "@/components/SettingsPanel";
 import { useLedger } from "@/context/LedgerContext";
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
-  "/": { title: "Impala Ledger", subtitle: "Buy-back dashboard" },
-  "/pay": { title: "Log Payment", subtitle: "Record a new payment" },
+  "/": { title: "Marquis Ledger", subtitle: "1999 Grand Marquis dashboard" },
+  "/pay": { title: "Log Entry", subtitle: "Payment or added debt" },
   "/calculator": { title: "Revenue Split", subtitle: "Detailing job calculator" },
-  "/history": { title: "Payment History", subtitle: "Tap a row for details" },
+  "/history": { title: "Ledger History", subtitle: "Tap a row for details" },
 };
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { settings, updateSettings, clearAllPayments, repaymentActive } =
-    useLedger();
+  const { settings, updateSettings, clearAllPayments } = useLedger();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const baseMeta = pageTitles[pathname] ?? pageTitles["/"];
-  const meta =
-    pathname === "/pay"
-      ? {
-          ...baseMeta,
-          title: repaymentActive ? "Log Payment" : "Log Income",
-          subtitle: repaymentActive
-            ? "Record a payment to Dad"
-            : "Track job earnings (30% used in projections)",
-        }
-      : baseMeta;
+  const meta = pageTitles[pathname] ?? pageTitles["/"];
 
   return (
     <>
       <div className="mx-auto w-full max-w-lg px-4 pb-28 pt-safe sm:max-w-xl">
         <header className="mb-6 flex items-start justify-between gap-4 pt-4">
           <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-white">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-bronze-bright">
               {meta.title}
             </h1>
             <p className="text-sm text-white/50">{meta.subtitle}</p>
