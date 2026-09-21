@@ -2,7 +2,10 @@
 
 import { Settings, Trash2, X } from "lucide-react";
 import { FormEvent, useState } from "react";
-import type { LedgerSettings } from "@/lib/types";
+import {
+  normalizeDebtSharePercent,
+  type LedgerSettings,
+} from "@/lib/types";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -57,6 +60,9 @@ function SettingsForm({
   const [milestoneStep, setMilestoneStep] = useState(
     String(settings.milestoneStep)
   );
+  const [debtSharePercent, setDebtSharePercent] = useState(
+    settings.debtSharePercent
+  );
   const [confirmClear, setConfirmClear] = useState(false);
 
   function handleSubmit(e: FormEvent) {
@@ -64,6 +70,7 @@ function SettingsForm({
     onSave({
       totalDebt: Math.max(0, parseFloat(totalDebt) || 0),
       milestoneStep: Math.max(100, parseFloat(milestoneStep) || 500),
+      debtSharePercent: normalizeDebtSharePercent(debtSharePercent),
     });
     onClose();
   }
@@ -125,6 +132,34 @@ function SettingsForm({
               className={inputClass}
             />
           </label>
+
+          <div className="rounded-xl border border-bronze/25 bg-dash-950/50 px-4 py-3">
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-white">Percent to the note</p>
+                <p className="mt-0.5 text-xs text-white/45">
+                  Share of net job earnings for debt
+                </p>
+              </div>
+              <p className="font-digital text-xl font-semibold text-dash-green tabular-nums">
+                {debtSharePercent}%
+              </p>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              step={1}
+              value={debtSharePercent}
+              onChange={(e) => setDebtSharePercent(Number(e.target.value))}
+              className="debt-share-slider w-full"
+              aria-label="Percent of net earnings toward debt"
+            />
+            <div className="mt-1.5 flex justify-between text-[11px] text-white/40">
+              <span>1%</span>
+              <span>100%</span>
+            </div>
+          </div>
 
           <button type="submit" className="dash-button w-full">
             Save Settings

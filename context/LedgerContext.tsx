@@ -9,7 +9,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { LedgerEntryKind, LedgerSettings, Payment } from "@/lib/types";
+import {
+  normalizeDebtSharePercent,
+  type LedgerEntryKind,
+  type LedgerSettings,
+  type Payment,
+} from "@/lib/types";
 import {
   estimatePayoffDate,
   getNextMilestone,
@@ -40,10 +45,12 @@ interface LedgerContextValue {
   principal: number;
   totalRemaining: number;
   percentPaid: number;
+  debtSharePercent: number;
   milestone: ReturnType<typeof getNextMilestone>;
   targetDate: Date | null;
   addPayment: (draft: PaymentDraft) => void;
   updateSettings: (settings: LedgerSettings) => void;
+  setDebtSharePercent: (percent: number) => void;
   setPaymentDraft: (draft: PaymentDraftPrefill | null) => void;
   clearPaymentDraft: () => void;
   clearAllPayments: () => void;
@@ -74,6 +81,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   }, [settings, hydrated]);
 
   const startingNote = settings?.totalDebt ?? 0;
+  const debtSharePercent = settings?.debtSharePercent ?? 30;
 
   const debtPayments = useMemo(
     () => payments.filter((p) => (p.kind ?? "debt_payment") === "debt_payment"),
@@ -109,8 +117,8 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   );
 
   const targetDate = useMemo(
-    () => estimatePayoffDate(totalRemaining, debtPayments),
-    [totalRemaining, debtPayments]
+    () => estimatePayoffDate(totalRemaining, debtPayments, debtSharePercent),
+    [totalRemaining, debtPayments, debtSharePercent]
   );
 
   const addPayment = useCallback((draft: PaymentDraft) => {
@@ -130,7 +138,21 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateSettings = useCallback((next: LedgerSettings) => {
-    setSettings(next);
+    setSettings({
+      ...next,
+      debtSharePercent: normalizeDebtSharePercent(next.debtSharePercent),
+    });
+  }, []);
+
+  const setDebtSharePercent = useCallback((percent: number) => {
+    setSettings((prev) =>
+      prev
+        ? {
+            ...prev,
+            debtSharePercent: normalizeDebtSharePercent(percent),
+          }
+        : prev
+    );
   }, []);
 
   const clearPaymentDraft = useCallback(() => {
@@ -163,10 +185,12 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
         principal,
         totalRemaining,
         percentPaid,
+        debtSharePercent,
         milestone,
         targetDate,
         addPayment,
         updateSettings,
+        setDebtSharePercent,
         setPaymentDraft,
         clearPaymentDraft,
         clearAllPayments,

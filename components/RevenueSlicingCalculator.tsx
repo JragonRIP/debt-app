@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   calculateRevenueSlice,
-  DEBT_SHARE,
   FRIEND_LABOR_RATE,
 } from "@/lib/revenue-slice";
 import { formatCurrency } from "@/lib/projections";
@@ -17,7 +16,8 @@ const inputClass =
 
 export function RevenueSlicingCalculator() {
   const router = useRouter();
-  const { setPaymentDraft } = useLedger();
+  const { setPaymentDraft, debtSharePercent, setDebtSharePercent } =
+    useLedger();
   const [earnings, setEarnings] = useState("");
   const [hours, setHours] = useState("");
 
@@ -25,8 +25,8 @@ export function RevenueSlicingCalculator() {
     const gross = parseFloat(earnings) || 0;
     const h = parseFloat(hours) || 0;
     if (gross <= 0) return null;
-    return calculateRevenueSlice(gross, h);
-  }, [earnings, hours]);
+    return calculateRevenueSlice(gross, h, debtSharePercent);
+  }, [earnings, hours, debtSharePercent]);
 
   function handleApply() {
     if (!slice || slice.gross <= 0) return;
@@ -46,16 +46,21 @@ export function RevenueSlicingCalculator() {
           value: slice.friendLaborCut,
           accent: false,
         },
-        { label: "Savings", sub: "50%", value: slice.savings, accent: false },
+        {
+          label: "Savings",
+          sub: `${slice.savingsPercent}%`,
+          value: slice.savings,
+          accent: false,
+        },
         {
           label: "Suggested Debt Payment",
-          sub: `${Math.round(DEBT_SHARE * 100)}% — sent to Pay tab`,
+          sub: `${debtSharePercent}% — sent to Pay tab`,
           value: slice.debtPayment,
           accent: true,
         },
         {
           label: "Take-Home Profit",
-          sub: "20%",
+          sub: `${slice.takeHomePercent}%`,
           value: slice.takeHome,
           accent: false,
         },
@@ -95,6 +100,39 @@ export function RevenueSlicingCalculator() {
             className={inputClass}
           />
         </label>
+      </div>
+
+      <div className="mt-5 rounded-xl border border-bronze/25 bg-dash-950/50 px-4 py-4">
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-bronze-bright/70">
+              Percent to the note
+            </p>
+            <p className="mt-0.5 text-xs text-white/45">
+              Drag to experiment with your debt share
+            </p>
+          </div>
+          <p className="font-digital text-2xl font-semibold text-dash-green tabular-nums">
+            {debtSharePercent}%
+          </p>
+        </div>
+        <input
+          type="range"
+          min={1}
+          max={100}
+          step={1}
+          value={debtSharePercent}
+          onChange={(e) => setDebtSharePercent(Number(e.target.value))}
+          className="debt-share-slider w-full"
+          aria-label="Percent of net earnings toward debt"
+          aria-valuemin={1}
+          aria-valuemax={100}
+          aria-valuenow={debtSharePercent}
+        />
+        <div className="mt-1.5 flex justify-between text-[11px] text-white/40">
+          <span>1%</span>
+          <span>100%</span>
+        </div>
       </div>
 
       {slice && (

@@ -1,4 +1,9 @@
-import { DEFAULT_SETTINGS, type LedgerSettings, type Payment } from "./types";
+import {
+  DEFAULT_SETTINGS,
+  normalizeDebtSharePercent,
+  type LedgerSettings,
+  type Payment,
+} from "./types";
 
 const PAYMENTS_KEY = "marquis-ledger-payments-v1";
 const SETTINGS_KEY = "marquis-ledger-settings-v1";
@@ -7,6 +12,16 @@ function normalizePayment(p: Payment): Payment {
   return {
     ...p,
     kind: p.kind ?? "debt_payment",
+  };
+}
+
+function normalizeSettings(raw: Partial<LedgerSettings>): LedgerSettings {
+  return {
+    totalDebt: raw.totalDebt ?? DEFAULT_SETTINGS.totalDebt,
+    milestoneStep: raw.milestoneStep ?? DEFAULT_SETTINGS.milestoneStep,
+    debtSharePercent: normalizeDebtSharePercent(
+      raw.debtSharePercent ?? DEFAULT_SETTINGS.debtSharePercent
+    ),
   };
 }
 
@@ -30,11 +45,7 @@ export function loadSettings(): LedgerSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    const parsed = JSON.parse(raw) as Partial<LedgerSettings>;
-    return {
-      totalDebt: parsed.totalDebt ?? DEFAULT_SETTINGS.totalDebt,
-      milestoneStep: parsed.milestoneStep ?? DEFAULT_SETTINGS.milestoneStep,
-    };
+    return normalizeSettings(JSON.parse(raw) as Partial<LedgerSettings>);
   } catch {
     return DEFAULT_SETTINGS;
   }
