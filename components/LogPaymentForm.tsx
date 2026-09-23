@@ -12,7 +12,9 @@ export interface PaymentDraft {
 }
 
 interface LogPaymentFormProps {
-  onSubmit: (draft: PaymentDraft) => void;
+  onSubmit: (
+    draft: PaymentDraft
+  ) => void | Promise<{ emailed?: boolean; emailError?: string } | void>;
   suggestedAmount?: number | null;
   suggestedDescription?: string | null;
   suggestedKind?: LedgerEntryKind | null;
@@ -40,15 +42,45 @@ export function LogPaymentForm({
   );
   const [description, setDescription] = useState(suggestedDescription ?? "");
   const [date, setDate] = useState(today);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [noticeKind, setNoticeKind] = useState<"ok" | "warn">("ok");
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!amount || !description.trim()) return;
-    onSubmit({ amount, description: description.trim(), date, kind });
-    onClearSuggestion?.();
-    setAmount("");
-    setDescription("");
-    setDate(today);
+    if (!amount || !description.trim() || busy) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const result = await onSubmit({
+        amount,
+        description: description.trim(),
+        date,
+        kind,
+      });
+      onClearSuggestion?.();
+      setAmount("");
+      setDescription("");
+      setDate(today);
+      if (kind === "debt_payment") {
+        if (result && "emailed" in result && result.emailed) {
+          setNoticeKind("ok");
+          setNotice("Logged. Dad was emailed the amount, remaining balance, and expected payoff date.");
+        } else {
+          setNoticeKind("warn");
+          setNotice(
+            result && "emailError" in result && result.emailError
+              ? `Logged locally, but the email did not send: ${result.emailError}`
+              : "Logged locally, but the email did not send."
+          );
+        }
+      } else {
+        setNoticeKind("ok");
+        setNotice("Added to the note. No email is sent for extra borrows.");
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   const isBorrow = kind === "borrow";
@@ -127,11 +159,30 @@ export function LogPaymentForm({
         />
       </label>
 
+      {notice && (
+        <p
+          className={`rounded-xl border px-3 py-2 text-sm ${
+            noticeKind === "ok"
+              ? "border-dash-green/35 bg-dash-green/10 text-dash-green"
+              : "border-amber-400/35 bg-amber-950/40 text-amber-200"
+          }`}
+        >
+          {notice}
+        </p>
+      )}
+
       <button
         type="submit"
+        disabled={busy}
         className={isBorrow ? "bronze-button w-full" : "dash-button w-full"}
       >
-        {isBorrow ? "Add to the note" : "Log payment"}
+        {busy
+          ? isBorrow
+            ? "Saving..."
+            : "Logging and emailing Dad..."
+          : isBorrow
+            ? "Add to the note"
+            : "Log payment"}
       </button>
     </form>
   );

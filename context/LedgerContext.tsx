@@ -17,9 +17,14 @@ import {
 } from "@/lib/types";
 import {
   estimatePayoffDate,
+  formatDate,
   getNextMilestone,
   sumPayments,
 } from "@/lib/projections";
+import {
+  sendDadPaymentEmail,
+  type PaymentNotifyPayload,
+} from "@/lib/payment-notify";
 import {
   clearPaymentsStorage,
   loadPayments,
@@ -48,7 +53,7 @@ interface LedgerContextValue {
   debtSharePercent: number;
   milestone: ReturnType<typeof getNextMilestone>;
   targetDate: Date | null;
-  addPayment: (draft: PaymentDraft) => void;
+  addPayment: (draft: PaymentDraft) => Promise<{ emailed: boolean; emailError?: string }>;
   updateSettings: (settings: LedgerSettings) => void;
   setDebtSharePercent: (percent: number) => void;
   setPaymentDraft: (draft: PaymentDraftPrefill | null) => void;
@@ -121,21 +126,57 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     [totalRemaining, debtPayments, debtSharePercent]
   );
 
-  const addPayment = useCallback((draft: PaymentDraft) => {
-    const amount = parseFloat(draft.amount);
-    if (!amount || amount <= 0) return;
-    const kind: LedgerEntryKind = draft.kind ?? "debt_payment";
-    const payment: Payment = {
-      id: crypto.randomUUID(),
-      amount,
-      description: draft.description,
-      date: draft.date,
-      status: "pending",
-      kind,
-    };
-    setPayments((prev) => [...prev, payment]);
-    setPaymentDraft(null);
-  }, []);
+  const addPayment = useCallback(
+    async (draft: PaymentDraft) => {
+      const amount = parseFloat(draft.amount);
+      if (!amount || amount <= 0) {
+        return { emailed: false, emailError: "Enter a payment amount" };
+      }
+      const kind: LedgerEntryKind = draft.kind ?? "debt_payment";
+      const payment: Payment = {
+        id: crypto.randomUUID(),
+        amount,
+        description: draft.description,
+        date: draft.date,
+        status: "pending",
+        kind,
+      };
+      setPayments((prev) => [...prev, payment]);
+      setPaymentDraft(null);
+
+      if (kind !== "debt_payment") {
+        return { emailed: false };
+      }
+
+      const nextPaid = totalPaidTowardDebt + amount;
+      const nextRemaining = Math.max(0, principal - nextPaid);
+      const nextDebtPayments = [...debtPayments, payment];
+      const expected = estimatePayoffDate(
+        nextRemaining,
+        nextDebtPayments,
+        debtSharePercent
+      );
+      const payload: PaymentNotifyPayload = {
+        amount,
+        remaining: nextRemaining,
+        expectedPayoff: expected ? formatDate(expected) : null,
+        description: draft.description,
+        date: draft.date,
+      };
+
+      try {
+        await sendDadPaymentEmail(payload);
+        return { emailed: true };
+      } catch (error) {
+        return {
+          emailed: false,
+          emailError:
+            error instanceof Error ? error.message : "Could not email Dad",
+        };
+      }
+    },
+    [debtPayments, debtSharePercent, principal, totalPaidTowardDebt]
+  );
 
   const updateSettings = useCallback((next: LedgerSettings) => {
     setSettings({
